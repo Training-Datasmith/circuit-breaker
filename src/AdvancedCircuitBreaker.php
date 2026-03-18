@@ -126,7 +126,7 @@ class AdvancedCircuitBreaker extends PartialCircuitBreaker
      */
     protected function callFallback(?callable $fallback = null): string
     {
-        return parent::callFallback(null !== $fallback ? $fallback : $this->defaultFallback);
+        return parent::callFallback($fallback ?? $this->defaultFallback);
     }
 
     protected function dispatchTransition(string $transition, string $service, array $serviceParameters): void

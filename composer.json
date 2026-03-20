@@ -34,16 +34,15 @@
     },
     "autoload": {
         "psr-4": {
-            "PrestaShop\\CircuitBreaker\\": "src/"
+            "Presta_Shop\\Circuit_Breaker\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\PrestaShop\\CircuitBreaker\\": "tests/"
+            "Tests\\Presta_Shop\\Circuit_Breaker\\": "tests/"
         }
     },
-    "config": {
-    },
+    "config": [],
     "scripts": {
         "cs-fix": "@php ./vendor/bin/php-cs-fixer fix",
         "test": "@php ./vendor/bin/phpunit",

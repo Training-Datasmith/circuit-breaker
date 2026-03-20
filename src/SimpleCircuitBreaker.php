@@ -24,64 +24,48 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
-
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
-use PrestaShop\CircuitBreaker\Exception\UnavailableServiceException;
-use PrestaShop\CircuitBreaker\Storage\SimpleArray;
-use PrestaShop\CircuitBreaker\System\MainSystem;
-
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Place_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Unavailable_Service_Exception;
+use Presta_Shop\Circuit_Breaker\Storage\Simple_Array;
+use Presta_Shop\Circuit_Breaker\System\Main_System;
 /**
  * Main implementation of Circuit Breaker.
  */
-final class SimpleCircuitBreaker extends PartialCircuitBreaker
+final class Simple_Circuit_Breaker extends Partial_Circuit_Breaker
 {
-    public function __construct(
-        PlaceInterface $openPlace,
-        PlaceInterface $halfOpenPlace,
-        PlaceInterface $closedPlace,
-        ClientInterface $client
-    ) {
-        $system = new MainSystem($closedPlace, $halfOpenPlace, $openPlace);
-
-        parent::__construct($system, $client, new SimpleArray());
+    public function __construct(Place_Interface $open_place, Place_Interface $half_open_place, Place_Interface $closed_place, Client_Interface $client)
+    {
+        $system = new Main_System($closed_place, $half_open_place, $open_place);
+        parent::__construct($system, $client, new Simple_Array());
     }
-
     /**
      * {@inheritdoc}
      */
-    public function call(
-        string $service,
-        array $serviceParameters = [],
-        ?callable $fallback = null
-    ): string {
-        $transaction = $this->initTransaction($service);
+    public function call(string $service, array $service_parameters = [], ?callable $fallback = null): string
+    {
+        $transaction = $this->init_transaction($service);
         try {
-            if ($this->isOpened()) {
-                if (!$this->canAccessService($transaction)) {
-                    return $this->callFallback($fallback);
+            if ($this->is_opened()) {
+                if (!$this->can_access_service($transaction)) {
+                    return $this->call_fallback($fallback);
                 }
-
-                $this->moveStateTo(State::HALF_OPEN_STATE, $service);
+                $this->move_state_to(State::HALF_OPEN_STATE, $service);
             }
-            $response = $this->request($service, $serviceParameters);
-            $this->moveStateTo(State::CLOSED_STATE, $service);
-
+            $response = $this->request($service, $service_parameters);
+            $this->move_state_to(State::CLOSED_STATE, $service);
             return $response;
-        } catch (UnavailableServiceException $exception) {
-            $transaction->incrementFailures();
-            $this->storage->saveTransaction($service, $transaction);
-            if (!$this->isAllowedToRetry($transaction)) {
-                $this->moveStateTo(State::OPEN_STATE, $service);
-
-                return $this->callFallback($fallback);
+        } catch (Unavailable_Service_Exception $exception) {
+            $transaction->increment_failures();
+            $this->storage->save_transaction($service, $transaction);
+            if (!$this->is_allowed_to_retry($transaction)) {
+                $this->move_state_to(State::OPEN_STATE, $service);
+                return $this->call_fallback($fallback);
             }
-
-            return $this->call($service, $serviceParameters, $fallback);
+            return $this->call($service, $service_parameters, $fallback);
         }
     }
 }

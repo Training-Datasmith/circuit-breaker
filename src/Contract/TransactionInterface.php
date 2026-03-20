@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,40 +25,34 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 use DateTime;
-
 /**
  * Once the circuit breaker call a service,
  * a transaction is initialized and stored.
  */
-interface TransactionInterface
+interface Transaction_Interface
 {
     /**
      * @return string the service name
      */
-    public function getService(): string;
-
+    public function get_service(): string;
     /**
      * @return int the number of failures to call the service
      */
-    public function getFailures(): int;
-
+    public function get_failures(): int;
     /**
      * @return string the current state of the Circuit Breaker
      */
-    public function getState(): string;
-
+    public function get_state(): string;
     /**
      * @return DateTime the time when the circuit breaker move
      *                  from open to half open state
      */
-    public function getThresholdDateTime(): DateTime;
-
+    public function get_threshold_date_time(): DateTime;
     /**
      * Everytime the service call fails, increment the number of failures.
      */
-    public function incrementFailures(): bool;
+    public function increment_failures(): bool;
 }

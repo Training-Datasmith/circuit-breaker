@@ -24,71 +24,57 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Storage;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Storage;
-
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Exception\TransactionNotFoundException;
-
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Transaction_Not_Found_Exception;
 /**
  * Very simple implementation of Storage using a simple PHP array.
  */
-final class SimpleArray implements StorageInterface
+final class Simple_Array implements Storage_Interface
 {
     /**
      * @var array the circuit breaker transactions
      */
     public static $transactions = [];
-
     /**
      * {@inheritdoc}
      */
-    public function saveTransaction(string $service, TransactionInterface $transaction): bool
+    public function save_transaction(string $service, Transaction_Interface $transaction): bool
     {
-        $key = $this->getKey($service);
-
+        $key = $this->get_key($service);
         self::$transactions[$key] = $transaction;
-
         return true;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getTransaction(string $service): TransactionInterface
+    public function get_transaction(string $service): Transaction_Interface
     {
-        $key = $this->getKey($service);
-
-        if ($this->hasTransaction($service)) {
+        $key = $this->get_key($service);
+        if ($this->has_transaction($service)) {
             return self::$transactions[$key];
         }
-
-        throw new TransactionNotFoundException();
+        throw new Transaction_Not_Found_Exception();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function hasTransaction(string $service): bool
+    public function has_transaction(string $service): bool
     {
-        $key = $this->getKey($service);
-
+        $key = $this->get_key($service);
         return array_key_exists($key, self::$transactions);
     }
-
     /**
      * {@inheritdoc}
      */
     public function clear(): bool
     {
         self::$transactions = [];
-
         return true;
     }
-
     /**
      * Helper method to properly store the transaction.
      *
@@ -96,7 +82,7 @@ final class SimpleArray implements StorageInterface
      *
      * @return string the transaction unique identifier
      */
-    private function getKey(string $service): string
+    private function get_key(string $service): string
     {
         return md5($service);
     }

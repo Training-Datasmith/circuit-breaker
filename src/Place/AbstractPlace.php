@@ -24,31 +24,26 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-declare(strict_types=1);
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Place;
 
-namespace PrestaShop\CircuitBreaker\Place;
-
-use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
-use PrestaShop\CircuitBreaker\Exception\InvalidPlaceException;
-use PrestaShop\CircuitBreaker\Util\Assert;
-
-abstract class AbstractPlace implements PlaceInterface
+use Presta_Shop\Circuit_Breaker\Contract\Place_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Invalid_Place_Exception;
+use Presta_Shop\Circuit_Breaker\Util\Assert;
+abstract class Abstract_Place implements Place_Interface
 {
     /**
      * @var int the Place failures
      */
     private $failures;
-
     /**
      * @var float the Place timeout
      */
     private $timeout;
-
     /**
      * @var int the Place threshold
      */
     private $threshold;
-
     /**
      * @param int $failures the Place failures
      * @param float $timeout the Place timeout
@@ -59,17 +54,14 @@ abstract class AbstractPlace implements PlaceInterface
     public function __construct(int $failures, float $timeout, int $threshold)
     {
         $this->validate($failures, $timeout, $threshold);
-
         $this->failures = $failures;
         $this->timeout = $timeout;
         $this->threshold = $threshold;
     }
-
     /**
      * {@inheritdoc}
      */
     abstract public function getstate(): string;
-
     /**
      * {@inheritdoc}
      */
@@ -77,7 +69,6 @@ abstract class AbstractPlace implements PlaceInterface
     {
         return $this->failures;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -85,7 +76,6 @@ abstract class AbstractPlace implements PlaceInterface
     {
         return $this->timeout;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -93,7 +83,6 @@ abstract class AbstractPlace implements PlaceInterface
     {
         return $this->threshold;
     }
-
     /**
      * ensure the place is valid (php5 is permissive).
      *
@@ -107,15 +96,10 @@ abstract class AbstractPlace implements PlaceInterface
      */
     private function validate(int $failures, float $timeout, int $threshold): bool
     {
-        $assertionsAreValid = Assert::isPositiveInteger($failures)
-            && Assert::isPositiveValue($timeout)
-            && Assert::isPositiveInteger($threshold)
-        ;
-
-        if ($assertionsAreValid) {
+        $assertions_are_valid = Assert::is_positive_integer($failures) && Assert::is_positive_value($timeout) && Assert::is_positive_integer($threshold);
+        if ($assertions_are_valid) {
             return true;
         }
-
-        throw InvalidPlaceException::invalidSettings($failures, $timeout, $threshold);
+        throw Invalid_Place_Exception::invalid_settings($failures, $timeout, $threshold);
     }
 }

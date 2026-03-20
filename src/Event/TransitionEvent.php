@@ -24,62 +24,53 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Event;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Event;
-
-use Symfony\Component\EventDispatcher\Event;
-
-class TransitionEvent extends Event
+use Symfony\Component\Event_Dispatcher\Event;
+class Transition_Event extends Event
 {
     /**
      * @var string the Transition name
      */
-    private $eventName;
-
+    private $event_name;
     /**
      * @var string the Service URI
      */
     private $service;
-
     /**
      * @var array the Service parameters
      */
     private $parameters;
-
     /**
      * @param string $eventName the transition name
      * @param string $service the Service URI
      * @param array $parameters the Service parameters
      */
-    public function __construct(string $eventName, string $service, array $parameters)
+    public function __construct(string $event_name, string $service, array $parameters)
     {
-        $this->eventName = $eventName;
+        $this->event_name = $event_name;
         $this->service = $service;
         $this->parameters = $parameters;
     }
-
     /**
      * @return string the Transition name
      */
-    public function getEvent(): string
+    public function get_event(): string
     {
-        return $this->eventName;
+        return $this->event_name;
     }
-
     /**
      * @return string the Service URI
      */
-    public function getService(): string
+    public function get_service(): string
     {
         return $this->service;
     }
-
     /**
      * @return array the Service parameters
      */
-    public function getParameters(): array
+    public function get_parameters(): array
     {
         return $this->parameters;
     }

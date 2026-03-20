@@ -24,235 +24,175 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
-
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\FactorySettingsInterface;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\TransitionDispatcherInterface;
-
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Factory_Settings_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transition_Dispatcher_Interface;
 /**
  * Class FactorySettings is a simple implementation of FactorySettingsInterface, it is mainly
  * a settings container and can be used with any Factory class.
  */
-class FactorySettings implements FactorySettingsInterface
+class Factory_Settings implements Factory_Settings_Interface
 {
     /** @var int */
     private $failures;
-
     /** @var float */
     private $timeout;
-
     /** @var int */
     private $threshold;
-
     /** @var float */
-    private $strippedTimeout;
-
+    private $stripped_timeout;
     /** @var int */
-    private $strippedFailures;
-
+    private $stripped_failures;
     /** @var StorageInterface|null */
     private $storage;
-
     /** @var TransitionDispatcherInterface|null */
     private $dispatcher;
-
     /** @var array */
-    private $clientOptions = [];
-
+    private $client_options = [];
     /** @var ClientInterface|null */
     private $client;
-
     /** @var callable|null */
-    private $defaultFallback;
-
-    public function __construct(
-        int $failures,
-        float $timeout,
-        int $threshold
-    ) {
-        $this->failures = $this->strippedFailures = $failures;
-        $this->timeout = $this->strippedTimeout = $timeout;
+    private $default_fallback;
+    public function __construct(int $failures, float $timeout, int $threshold)
+    {
+        $this->failures = $this->stripped_failures = $failures;
+        $this->timeout = $this->stripped_timeout = $timeout;
         $this->threshold = $threshold;
     }
-
     /**
      * {@inheritdoc}
      */
-    public static function merge(FactorySettingsInterface $settingsA, FactorySettingsInterface $settingsB): FactorySettingsInterface
+    public static function merge(Factory_Settings_Interface $settings_a, Factory_Settings_Interface $settings_b): Factory_Settings_Interface
     {
-        $mergedSettings = new FactorySettings(
-            $settingsB->getFailures(),
-            $settingsB->getTimeout(),
-            $settingsB->getThreshold()
-        );
-        $mergedSettings
-            ->setStrippedFailures($settingsB->getStrippedFailures())
-            ->setStrippedTimeout($settingsB->getStrippedTimeout())
-        ;
-
-        $mergedSettings->setClientOptions(array_merge(
-            $settingsA->getClientOptions(),
-            $settingsB->getClientOptions()
-        ));
-
-        if (null !== $settingsB->getClient()) {
-            $mergedSettings->setClient($settingsB->getClient());
-        } elseif (null !== $settingsA->getClient()) {
-            $mergedSettings->setClient($settingsA->getClient());
+        $merged_settings = new Factory_Settings($settings_b->get_failures(), $settings_b->get_timeout(), $settings_b->get_threshold());
+        $merged_settings->set_stripped_failures($settings_b->get_stripped_failures())->set_stripped_timeout($settings_b->get_stripped_timeout());
+        $merged_settings->set_client_options(array_merge($settings_a->get_client_options(), $settings_b->get_client_options()));
+        if (null !== $settings_b->get_client()) {
+            $merged_settings->set_client($settings_b->get_client());
+        } elseif (null !== $settings_a->get_client()) {
+            $merged_settings->set_client($settings_a->get_client());
         }
-
-        return $mergedSettings;
+        return $merged_settings;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getFailures(): int
+    public function get_failures(): int
     {
         return $this->failures;
     }
-
-    public function setFailures(int $failures): self
+    public function set_failures(int $failures): self
     {
         $this->failures = $failures;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getTimeout(): float
+    public function get_timeout(): float
     {
         return $this->timeout;
     }
-
-    public function setTimeout(float $timeout): self
+    public function set_timeout(float $timeout): self
     {
         $this->timeout = $timeout;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getThreshold(): int
+    public function get_threshold(): int
     {
         return $this->threshold;
     }
-
-    public function setThreshold(int $threshold): self
+    public function set_threshold(int $threshold): self
     {
         $this->threshold = $threshold;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getStrippedTimeout(): float
+    public function get_stripped_timeout(): float
     {
-        return $this->strippedTimeout;
+        return $this->stripped_timeout;
     }
-
-    public function setStrippedTimeout(float $strippedTimeout): self
+    public function set_stripped_timeout(float $stripped_timeout): self
     {
-        $this->strippedTimeout = $strippedTimeout;
-
+        $this->stripped_timeout = $stripped_timeout;
         return $this;
     }
-
-    public function getStrippedFailures(): int
+    public function get_stripped_failures(): int
     {
-        return $this->strippedFailures;
+        return $this->stripped_failures;
     }
-
-    public function setStrippedFailures(int $strippedFailures): self
+    public function set_stripped_failures(int $stripped_failures): self
     {
-        $this->strippedFailures = $strippedFailures;
-
+        $this->stripped_failures = $stripped_failures;
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getStorage(): ?StorageInterface
+    public function get_storage(): ?Storage_Interface
     {
         return $this->storage;
     }
-
-    public function setStorage(StorageInterface $storage): self
+    public function set_storage(Storage_Interface $storage): self
     {
         $this->storage = $storage;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getDispatcher(): ?TransitionDispatcherInterface
+    public function get_dispatcher(): ?Transition_Dispatcher_Interface
     {
         return $this->dispatcher;
     }
-
-    public function setDispatcher(TransitionDispatcherInterface $dispatcher): self
+    public function set_dispatcher(Transition_Dispatcher_Interface $dispatcher): self
     {
         $this->dispatcher = $dispatcher;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions(): array
+    public function get_client_options(): array
     {
-        return $this->clientOptions;
+        return $this->client_options;
     }
-
-    public function setClientOptions(array $clientOptions): self
+    public function set_client_options(array $client_options): self
     {
-        $this->clientOptions = $clientOptions;
-
+        $this->client_options = $client_options;
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getClient(): ?ClientInterface
+    public function get_client(): ?Client_Interface
     {
         return $this->client;
     }
-
-    public function setClient(?ClientInterface $client = null): self
+    public function set_client(?Client_Interface $client = null): self
     {
         $this->client = $client;
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getDefaultFallback(): ?callable
+    public function get_default_fallback(): ?callable
     {
-        return $this->defaultFallback;
+        return $this->default_fallback;
     }
-
-    public function setDefaultFallback(callable $defaultFallback): self
+    public function set_default_fallback(callable $default_fallback): self
     {
-        $this->defaultFallback = $defaultFallback;
-
+        $this->default_fallback = $default_fallback;
         return $this;
     }
 }

@@ -24,10 +24,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
 /**
  * Define the available states of the Circuit Breaker;.
@@ -39,7 +37,6 @@ final class State
      * to third-party services. Only the alternative call is done.
      */
     public const OPEN_STATE = 'OPEN';
-
     /**
      * After some conditions are valid, the circuit breaker
      * try to access the third-party service. If the service is valid,
@@ -47,7 +44,6 @@ final class State
      * go to OPEN state.
      */
     public const HALF_OPEN_STATE = 'HALF OPEN';
-
     /**
      * On the first call of the service, or if the service is valid
      * the circuit breaker is in CLOSED state. This means that the callable

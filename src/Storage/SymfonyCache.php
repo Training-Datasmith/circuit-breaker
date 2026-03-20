@@ -24,73 +24,60 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Storage;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Storage;
-
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Exception\TransactionNotFoundException;
-use Psr\SimpleCache\CacheInterface;
-
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Transaction_Not_Found_Exception;
+use Psr\Simple_Cache\Cache_Interface;
 /**
  * Implementation of Storage using the Symfony Cache Component.
  */
-final class SymfonyCache implements StorageInterface
+final class Symfony_Cache implements Storage_Interface
 {
     /**
      * @var CacheInterface the Symfony Cache
      */
-    private $symfonyCache;
-
-    public function __construct(CacheInterface $symfonyCache)
+    private $symfony_cache;
+    public function __construct(Cache_Interface $symfony_cache)
     {
-        $this->symfonyCache = $symfonyCache;
+        $this->symfony_cache = $symfony_cache;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function saveTransaction(string $service, TransactionInterface $transaction): bool
+    public function save_transaction(string $service, Transaction_Interface $transaction): bool
     {
-        $key = $this->getKey($service);
-
-        return $this->symfonyCache->set($key, $transaction);
+        $key = $this->get_key($service);
+        return $this->symfony_cache->set($key, $transaction);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getTransaction(string $service): TransactionInterface
+    public function get_transaction(string $service): Transaction_Interface
     {
-        $key = $this->getKey($service);
-
-        if ($this->hasTransaction($service)) {
-            return $this->symfonyCache->get($key);
+        $key = $this->get_key($service);
+        if ($this->has_transaction($service)) {
+            return $this->symfony_cache->get($key);
         }
-
-        throw new TransactionNotFoundException();
+        throw new Transaction_Not_Found_Exception();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function hasTransaction(string $service): bool
+    public function has_transaction(string $service): bool
     {
-        $key = $this->getKey($service);
-
-        return $this->symfonyCache->has($key);
+        $key = $this->get_key($service);
+        return $this->symfony_cache->has($key);
     }
-
     /**
      * {@inheritdoc}
      */
     public function clear(): bool
     {
-        return $this->symfonyCache->clear();
+        return $this->symfony_cache->clear();
     }
-
     /**
      * Helper method to properly store the transaction.
      *
@@ -98,7 +85,7 @@ final class SymfonyCache implements StorageInterface
      *
      * @return string the transaction unique identifier
      */
-    private function getKey(string $service): string
+    private function get_key(string $service): string
     {
         return md5($service);
     }

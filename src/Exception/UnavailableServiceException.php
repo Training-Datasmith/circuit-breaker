@@ -24,11 +24,9 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Exception;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Exception;
-
-final class UnavailableServiceException extends CircuitBreakerException
+final class Unavailable_Service_Exception extends Circuit_Breaker_Exception
 {
 }

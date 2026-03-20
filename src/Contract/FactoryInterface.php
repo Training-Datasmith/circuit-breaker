@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,16 +25,15 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * Ease the creation of the Circuit Breaker.
  */
-interface FactoryInterface
+interface Factory_Interface
 {
     /**
      * @param FactorySettingsInterface $settings the settings for the Place
      */
-    public function create(FactorySettingsInterface $settings): CircuitBreakerInterface;
+    public function create(Factory_Settings_Interface $settings): Circuit_Breaker_Interface;
 }

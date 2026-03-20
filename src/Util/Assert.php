@@ -24,10 +24,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Util;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Util;
 
 /**
  * Util class to handle object validation
@@ -39,35 +37,28 @@ final class Assert
     /**
      * @param mixed $value the value to evaluate
      */
-    public static function isPositiveValue($value): bool
+    public static function is_positive_value($value): bool
     {
         return !is_string($value) && is_numeric($value) && $value >= 0;
     }
-
     /**
      * @param mixed $value the value to evaluate
      */
-    public static function isPositiveInteger($value): bool
+    public static function is_positive_integer($value): bool
     {
-        return self::isPositiveValue($value) && is_int($value);
+        return self::is_positive_value($value) && is_int($value);
     }
-
     /**
      * @param mixed $value the value to evaluate
      */
-    public static function isURI($value): bool
+    public static function is_uri($value): bool
     {
-        return null !== $value
-            && !is_numeric($value)
-            && !is_bool($value)
-            && false !== filter_var($value, FILTER_SANITIZE_URL)
-        ;
+        return null !== $value && !is_numeric($value) && !is_bool($value) && false !== filter_var($value, FILTER_SANITIZE_URL);
     }
-
     /**
      * @param mixed $value the value to evaluate
      */
-    public static function isString($value): bool
+    public static function is_string($value): bool
     {
         return !empty($value) && is_string($value);
     }

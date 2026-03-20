@@ -24,15 +24,12 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\System;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\System;
-
-use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
-use PrestaShop\CircuitBreaker\Contract\SystemInterface;
-use PrestaShop\CircuitBreaker\State;
-
+use Presta_Shop\Circuit_Breaker\Contract\Place_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\System_Interface;
+use Presta_Shop\Circuit_Breaker\State;
 /**
  * Implement the system described by the documentation.
  * The main system is built with 3 places:
@@ -40,37 +37,27 @@ use PrestaShop\CircuitBreaker\State;
  * - A Half Open Place
  * - An Open Place
  */
-final class MainSystem implements SystemInterface
+final class Main_System implements System_Interface
 {
     /**
      * @var PlaceInterface[]
      */
     private $places;
-
-    public function __construct(
-        PlaceInterface $closedPlace,
-        PlaceInterface $halfOpenPlace,
-        PlaceInterface $openPlace
-    ) {
-        $this->places = [
-            $closedPlace->getState() => $closedPlace,
-            $halfOpenPlace->getState() => $halfOpenPlace,
-            $openPlace->getState() => $openPlace,
-        ];
+    public function __construct(Place_Interface $closed_place, Place_Interface $half_open_place, Place_Interface $open_place)
+    {
+        $this->places = [$closed_place->get_state() => $closed_place, $half_open_place->get_state() => $half_open_place, $open_place->get_state() => $open_place];
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getInitialPlace(): PlaceInterface
+    public function get_initial_place(): Place_Interface
     {
         return $this->places[State::CLOSED_STATE];
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getPlaces(): array
+    public function get_places(): array
     {
         return $this->places;
     }

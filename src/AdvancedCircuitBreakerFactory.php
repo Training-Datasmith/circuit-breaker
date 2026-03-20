@@ -24,58 +24,47 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
-
-use PrestaShop\CircuitBreaker\Client\SymfonyHttpClient;
-use PrestaShop\CircuitBreaker\Contract\CircuitBreakerInterface;
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\FactoryInterface;
-use PrestaShop\CircuitBreaker\Contract\FactorySettingsInterface;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\TransitionDispatcherInterface;
-use PrestaShop\CircuitBreaker\Place\ClosedPlace;
-use PrestaShop\CircuitBreaker\Place\HalfOpenPlace;
-use PrestaShop\CircuitBreaker\Place\OpenPlace;
-use PrestaShop\CircuitBreaker\Storage\SimpleArray;
-use PrestaShop\CircuitBreaker\System\MainSystem;
-use PrestaShop\CircuitBreaker\Transition\NullDispatcher;
-
+use Presta_Shop\Circuit_Breaker\Client\Symfony_Http_Client;
+use Presta_Shop\Circuit_Breaker\Contract\Circuit_Breaker_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Factory_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Factory_Settings_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transition_Dispatcher_Interface;
+use Presta_Shop\Circuit_Breaker\Place\Closed_Place;
+use Presta_Shop\Circuit_Breaker\Place\Half_Open_Place;
+use Presta_Shop\Circuit_Breaker\Place\Open_Place;
+use Presta_Shop\Circuit_Breaker\Storage\Simple_Array;
+use Presta_Shop\Circuit_Breaker\System\Main_System;
+use Presta_Shop\Circuit_Breaker\Transition\Null_Dispatcher;
 /**
  * Advanced implementation of Circuit Breaker Factory
  * Used to create an AdvancedCircuitBreaker instance.
  */
-final class AdvancedCircuitBreakerFactory implements FactoryInterface
+final class Advanced_Circuit_Breaker_Factory implements Factory_Interface
 {
     /**
      * {@inheritdoc}
      */
-    public function create(FactorySettingsInterface $settings): CircuitBreakerInterface
+    public function create(Factory_Settings_Interface $settings): Circuit_Breaker_Interface
     {
-        $closedPlace = new ClosedPlace($settings->getFailures(), $settings->getTimeout(), 0);
-        $openPlace = new OpenPlace(0, 0, $settings->getThreshold());
-        $halfOpenPlace = new HalfOpenPlace($settings->getFailures(), $settings->getStrippedTimeout(), 0);
-        $system = new MainSystem($closedPlace, $halfOpenPlace, $openPlace);
-
+        $closed_place = new Closed_Place($settings->get_failures(), $settings->get_timeout(), 0);
+        $open_place = new Open_Place(0, 0, $settings->get_threshold());
+        $half_open_place = new Half_Open_Place($settings->get_failures(), $settings->get_stripped_timeout(), 0);
+        $system = new Main_System($closed_place, $half_open_place, $open_place);
         /** @var ClientInterface $client */
-        $client = $settings->getClient() ?: new SymfonyHttpClient($settings->getClientOptions());
+        $client = $settings->get_client() ?: new Symfony_Http_Client($settings->get_client_options());
         /** @var StorageInterface $storage */
-        $storage = $settings->getStorage() ?: new SimpleArray();
+        $storage = $settings->get_storage() ?: new Simple_Array();
         /** @var TransitionDispatcherInterface $dispatcher */
-        $dispatcher = $settings->getDispatcher() ?: new NullDispatcher();
-
-        $circuitBreaker = new AdvancedCircuitBreaker(
-            $system,
-            $client,
-            $storage,
-            $dispatcher
-        );
-        if (null !== $settings->getDefaultFallback()) {
-            $circuitBreaker->setDefaultFallback($settings->getDefaultFallback());
+        $dispatcher = $settings->get_dispatcher() ?: new Null_Dispatcher();
+        $circuit_breaker = new Advanced_Circuit_Breaker($system, $client, $storage, $dispatcher);
+        if (null !== $settings->get_default_fallback()) {
+            $circuit_breaker->set_default_fallback($settings->get_default_fallback());
         }
-
-        return $circuitBreaker;
+        return $circuit_breaker;
     }
 }

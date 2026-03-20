@@ -24,154 +24,123 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
 use DateTime;
-use PrestaShop\CircuitBreaker\Client\GuzzleClient;
-use PrestaShop\CircuitBreaker\Contract\CircuitBreakerInterface;
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\SystemInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Transaction\SimpleTransaction;
-
-abstract class PartialCircuitBreaker implements CircuitBreakerInterface
+use Presta_Shop\Circuit_Breaker\Client\Guzzle_Client;
+use Presta_Shop\Circuit_Breaker\Contract\Circuit_Breaker_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Place_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\System_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Transaction\Simple_Transaction;
+abstract class Partial_Circuit_Breaker implements Circuit_Breaker_Interface
 {
-    public function __construct(
-        SystemInterface $system,
-        ClientInterface $client,
-        StorageInterface $storage
-    ) {
-        $this->currentPlace = $system->getInitialPlace();
-        $this->places = $system->getPlaces();
+    public function __construct(System_Interface $system, Client_Interface $client, Storage_Interface $storage)
+    {
+        $this->current_place = $system->get_initial_place();
+        $this->places = $system->get_places();
         $this->client = $client;
         $this->storage = $storage;
     }
-
     /**
      * @var ClientInterface the Client that consumes the service URI
      */
     protected $client;
-
     /**
      * @var PlaceInterface the current Place of the Circuit Breaker
      */
-    protected $currentPlace;
-
+    protected $current_place;
     /**
      * @var PlaceInterface[] the Circuit Breaker places
      */
     protected $places = [];
-
     /**
      * @var StorageInterface the Circuit Breaker storage
      */
     protected $storage;
-
     /**
      * {@inheritdoc}
      */
-    abstract public function call(string $service, array $serviceParameters = [], ?callable $fallback = null): string;
-
+    abstract public function call(string $service, array $service_parameters = [], ?callable $fallback = null): string;
     /**
      * {@inheritdoc}
      */
-    public function getState(): string
+    public function get_state(): string
     {
-        return $this->currentPlace->getState();
+        return $this->current_place->get_state();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function isOpened(): bool
+    public function is_opened(): bool
     {
-        return State::OPEN_STATE === $this->currentPlace->getState();
+        return State::OPEN_STATE === $this->current_place->get_state();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function isHalfOpened(): bool
+    public function is_half_opened(): bool
     {
-        return State::HALF_OPEN_STATE === $this->currentPlace->getState();
+        return State::HALF_OPEN_STATE === $this->current_place->get_state();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function isClosed(): bool
+    public function is_closed(): bool
     {
-        return State::CLOSED_STATE === $this->currentPlace->getState();
+        return State::CLOSED_STATE === $this->current_place->get_state();
     }
-
-    protected function callFallback(?callable $fallback = null): string
+    protected function call_fallback(?callable $fallback = null): string
     {
         if (null === $fallback) {
             return '';
         }
-
         return (string) call_user_func($fallback);
     }
-
     /**
      * @param string $state the Place state
      * @param string $service the service URI
      */
-    protected function moveStateTo(string $state, string $service): bool
+    protected function move_state_to(string $state, string $service): bool
     {
-        $this->currentPlace = $this->places[$state];
-        $transaction = SimpleTransaction::createFromPlace(
-            $this->currentPlace,
-            $service
-        );
-
-        return $this->storage->saveTransaction($service, $transaction);
+        $this->current_place = $this->places[$state];
+        $transaction = Simple_Transaction::create_from_place($this->current_place, $service);
+        return $this->storage->save_transaction($service, $transaction);
     }
-
     /**
      * @param string $service the service URI
      */
-    protected function initTransaction(string $service): TransactionInterface
+    protected function init_transaction(string $service): Transaction_Interface
     {
-        if ($this->storage->hasTransaction($service)) {
-            $transaction = $this->storage->getTransaction($service);
+        if ($this->storage->has_transaction($service)) {
+            $transaction = $this->storage->get_transaction($service);
             // CircuitBreaker needs to be in the same state as its last transaction
-            if ($this->getState() !== $transaction->getState()) {
-                $this->currentPlace = $this->places[$transaction->getState()];
+            if ($this->get_state() !== $transaction->get_state()) {
+                $this->current_place = $this->places[$transaction->get_state()];
             }
         } else {
-            $transaction = SimpleTransaction::createFromPlace(
-                $this->currentPlace,
-                $service
-            );
-
-            $this->storage->saveTransaction($service, $transaction);
+            $transaction = Simple_Transaction::create_from_place($this->current_place, $service);
+            $this->storage->save_transaction($service, $transaction);
         }
-
         return $transaction;
     }
-
     /**
      * @param TransactionInterface $transaction the Transaction
      */
-    protected function isAllowedToRetry(TransactionInterface $transaction): bool
+    protected function is_allowed_to_retry(Transaction_Interface $transaction): bool
     {
-        return $transaction->getFailures() < $this->currentPlace->getFailures();
+        return $transaction->get_failures() < $this->current_place->get_failures();
     }
-
     /**
      * @param TransactionInterface $transaction the Transaction
      */
-    protected function canAccessService(TransactionInterface $transaction): bool
+    protected function can_access_service(Transaction_Interface $transaction): bool
     {
-        return $transaction->getThresholdDateTime() < new DateTime();
+        return $transaction->get_threshold_date_time() < new DateTime();
     }
-
     /**
      * Calls the client with the right information.
      *
@@ -180,15 +149,10 @@ abstract class PartialCircuitBreaker implements CircuitBreakerInterface
      */
     protected function request(string $service, array $parameters = []): string
     {
-        $forcedParameters = ['timeout' => $this->currentPlace->getTimeout()];
-
-        if ($this->client instanceof GuzzleClient) {
-            $forcedParameters['connect_timeout'] = $this->currentPlace->getTimeout();
+        $forced_parameters = ['timeout' => $this->current_place->get_timeout()];
+        if ($this->client instanceof Guzzle_Client) {
+            $forced_parameters['connect_timeout'] = $this->current_place->get_timeout();
         }
-
-        return $this->client->request(
-            $service,
-            array_merge($parameters, $forcedParameters)
-        );
+        return $this->client->request($service, array_merge($parameters, $forced_parameters));
     }
 }

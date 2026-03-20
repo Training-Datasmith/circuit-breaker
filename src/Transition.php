@@ -24,10 +24,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
 /**
  * Define the available transitions of the Circuit Breaker;.
@@ -38,31 +36,26 @@ final class Transition
      * Happened only once when calling the Circuit Breaker.
      */
     public const INITIATING_TRANSITION = 'INITIATING';
-
     /**
      * Happened when we open the Circuit Breaker.
      * This means once the Circuit Breaker is in failure.
      */
     public const OPENING_TRANSITION = 'OPENING';
-
     /**
      * Happened once the conditions of retry are met
      * in OPEN state to move to HALF_OPEN state in the
      * Circuit Breaker.
      */
     public const CHECKING_AVAILABILITY_TRANSITION = 'CHECKING AVAILABILITY';
-
     /**
      * Happened when we come back to OPEN state
      * in the Circuit Breaker from the HALF_OPEN state.
      */
     public const REOPENING_TRANSITION = 'REOPENING';
-
     /**
      * Happened if the service is available again.
      */
     public const CLOSING_TRANSITION = 'CLOSING';
-
     /**
      * Happened on each try to call the service.
      */

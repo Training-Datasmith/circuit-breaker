@@ -24,28 +24,20 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Exception;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Exception;
-
-use PrestaShop\CircuitBreaker\Util\ErrorFormatter;
-
-final class InvalidPlaceException extends CircuitBreakerException
+use Presta_Shop\Circuit_Breaker\Util\Error_Formatter;
+final class Invalid_Place_Exception extends Circuit_Breaker_Exception
 {
     /**
      * @param mixed $failures the failures
      * @param mixed $timeout the timeout
      * @param mixed $threshold the threshold
      */
-    public static function invalidSettings($failures, $timeout, $threshold): self
+    public static function invalid_settings($failures, $timeout, $threshold): self
     {
-        $exceptionMessage = 'Invalid settings for Place' . PHP_EOL .
-            ErrorFormatter::format('failures', $failures, 'isPositiveInteger', 'a positive integer') .
-            ErrorFormatter::format('timeout', $timeout, 'isPositiveValue', 'a float') .
-            ErrorFormatter::format('threshold', $threshold, 'isPositiveInteger', 'a positive integer')
-        ;
-
-        return new self($exceptionMessage);
+        $exception_message = 'Invalid settings for Place' . PHP_EOL . Error_Formatter::format('failures', $failures, 'isPositiveInteger', 'a positive integer') . Error_Formatter::format('timeout', $timeout, 'isPositiveValue', 'a float') . Error_Formatter::format('threshold', $threshold, 'isPositiveInteger', 'a positive integer');
+        return new self($exception_message);
     }
 }

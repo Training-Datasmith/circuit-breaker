@@ -24,71 +24,58 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Storage;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Storage;
-
-use Doctrine\Common\Cache\CacheProvider;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Exception\TransactionNotFoundException;
-
+use Doctrine\Common\Cache\Cache_Provider;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Transaction_Not_Found_Exception;
 /**
  * Implementation of Storage using the Doctrine Cache.
  */
-class DoctrineCache implements StorageInterface
+class Doctrine_Cache implements Storage_Interface
 {
     /** @var CacheProvider */
-    private $cacheProvider;
-
-    public function __construct(CacheProvider $cacheProvider)
+    private $cache_provider;
+    public function __construct(Cache_Provider $cache_provider)
     {
-        $this->cacheProvider = $cacheProvider;
+        $this->cache_provider = $cache_provider;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function saveTransaction(string $service, TransactionInterface $transaction): bool
+    public function save_transaction(string $service, Transaction_Interface $transaction): bool
     {
-        $key = $this->getKey($service);
-
-        return $this->cacheProvider->save($key, $transaction);
+        $key = $this->get_key($service);
+        return $this->cache_provider->save($key, $transaction);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getTransaction(string $service): TransactionInterface
+    public function get_transaction(string $service): Transaction_Interface
     {
-        $key = $this->getKey($service);
-
-        if ($this->hasTransaction($service)) {
-            return $this->cacheProvider->fetch($key);
+        $key = $this->get_key($service);
+        if ($this->has_transaction($service)) {
+            return $this->cache_provider->fetch($key);
         }
-
-        throw new TransactionNotFoundException();
+        throw new Transaction_Not_Found_Exception();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function hasTransaction(string $service): bool
+    public function has_transaction(string $service): bool
     {
-        $key = $this->getKey($service);
-
-        return $this->cacheProvider->contains($key);
+        $key = $this->get_key($service);
+        return $this->cache_provider->contains($key);
     }
-
     /**
      * {@inheritdoc}
      */
     public function clear(): bool
     {
-        return $this->cacheProvider->deleteAll();
+        return $this->cache_provider->delete_all();
     }
-
     /**
      * Helper method to properly store the transaction.
      *
@@ -96,7 +83,7 @@ class DoctrineCache implements StorageInterface
      *
      * @return string the transaction unique identifier
      */
-    private function getKey(string $service): string
+    private function get_key(string $service): string
     {
         return md5($service);
     }

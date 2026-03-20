@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,16 +25,14 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
-namespace PrestaShop\CircuitBreaker\Contract;
-
-use PrestaShop\CircuitBreaker\Exception\TransactionNotFoundException;
-
+use Presta_Shop\Circuit_Breaker\Exception\Transaction_Not_Found_Exception;
 /**
  * Store the transaction between the Circuit Breaker
  * and the tiers service.
  */
-interface StorageInterface
+interface Storage_Interface
 {
     /**
      * Save the CircuitBreaker transaction.
@@ -42,8 +40,7 @@ interface StorageInterface
      * @param string $service The service name
      * @param TransactionInterface $transaction the transaction
      */
-    public function saveTransaction(string $service, TransactionInterface $transaction): bool;
-
+    public function save_transaction(string $service, Transaction_Interface $transaction): bool;
     /**
      * Retrieve the CircuitBreaker transaction for a specific service.
      *
@@ -51,15 +48,13 @@ interface StorageInterface
      *
      * @throws TransactionNotFoundException
      */
-    public function getTransaction(string $service): TransactionInterface;
-
+    public function get_transaction(string $service): Transaction_Interface;
     /**
      * Checks if the transaction exists.
      *
      * @param string $service the service name
      */
-    public function hasTransaction(string $service): bool;
-
+    public function has_transaction(string $service): bool;
     /**
      * Clear the Circuit Breaker storage.
      */

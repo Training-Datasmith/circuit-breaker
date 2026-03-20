@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,33 +25,22 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * Interface FactorySettingsInterface contains the settings used by the Factory
  */
-interface FactorySettingsInterface
+interface Factory_Settings_Interface
 {
-    public static function merge(FactorySettingsInterface $settingsA, FactorySettingsInterface $settingsB): FactorySettingsInterface;
-
-    public function getFailures(): int;
-
-    public function getTimeout(): float;
-
-    public function getThreshold(): int;
-
-    public function getStrippedTimeout(): float;
-
-    public function getStrippedFailures(): int;
-
-    public function getStorage(): ?StorageInterface;
-
-    public function getDispatcher(): ?TransitionDispatcherInterface;
-
-    public function getClientOptions(): array;
-
-    public function getClient(): ?ClientInterface;
-
-    public function getDefaultFallback(): ?callable;
+    public static function merge(Factory_Settings_Interface $settings_a, Factory_Settings_Interface $settings_b): Factory_Settings_Interface;
+    public function get_failures(): int;
+    public function get_timeout(): float;
+    public function get_threshold(): int;
+    public function get_stripped_timeout(): float;
+    public function get_stripped_failures(): int;
+    public function get_storage(): ?Storage_Interface;
+    public function get_dispatcher(): ?Transition_Dispatcher_Interface;
+    public function get_client_options(): array;
+    public function get_client(): ?Client_Interface;
+    public function get_default_fallback(): ?callable;
 }

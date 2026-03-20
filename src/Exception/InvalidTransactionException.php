@@ -24,14 +24,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Exception;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Exception;
-
-use PrestaShop\CircuitBreaker\Util\ErrorFormatter;
-
-final class InvalidTransactionException extends CircuitBreakerException
+use Presta_Shop\Circuit_Breaker\Util\Error_Formatter;
+final class Invalid_Transaction_Exception extends Circuit_Breaker_Exception
 {
     /**
      * @param mixed $service the service URI
@@ -39,15 +36,9 @@ final class InvalidTransactionException extends CircuitBreakerException
      * @param mixed $state the Circuit Breaker
      * @param mixed $threshold the threshold
      */
-    public static function invalidParameters($service, $failures, $state, $threshold): self
+    public static function invalid_parameters($service, $failures, $state, $threshold): self
     {
-        $exceptionMessage = 'Invalid parameters for Transaction' . PHP_EOL .
-            ErrorFormatter::format('service', $service, 'isURI', 'an URI') .
-            ErrorFormatter::format('failures', $failures, 'isPositiveInteger', 'a positive integer') .
-            ErrorFormatter::format('state', $state, 'isString', 'a string') .
-            ErrorFormatter::format('threshold', $threshold, 'isPositiveInteger', 'a positive integer')
-        ;
-
-        return new self($exceptionMessage);
+        $exception_message = 'Invalid parameters for Transaction' . PHP_EOL . Error_Formatter::format('service', $service, 'isURI', 'an URI') . Error_Formatter::format('failures', $failures, 'isPositiveInteger', 'a positive integer') . Error_Formatter::format('state', $state, 'isString', 'a string') . Error_Formatter::format('threshold', $threshold, 'isPositiveInteger', 'a positive integer');
+        return new self($exception_message);
     }
 }

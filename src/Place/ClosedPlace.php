@@ -24,19 +24,16 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Place;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Place;
-
-use PrestaShop\CircuitBreaker\State;
-
-final class ClosedPlace extends AbstractPlace
+use Presta_Shop\Circuit_Breaker\State;
+final class Closed_Place extends Abstract_Place
 {
     /**
      * {@inheritdoc}
      */
-    public function getState(): string
+    public function get_state(): string
     {
         return State::CLOSED_STATE;
     }

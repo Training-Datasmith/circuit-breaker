@@ -24,23 +24,20 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Transition;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Transition;
-
-use PrestaShop\CircuitBreaker\Contract\TransitionDispatcherInterface;
-
+use Presta_Shop\Circuit_Breaker\Contract\Transition_Dispatcher_Interface;
 /**
  * Class NullDispatcher is used when you have no TransitionDispatcher to inject
  * because you don't need it.
  */
-class NullDispatcher implements TransitionDispatcherInterface
+class Null_Dispatcher implements Transition_Dispatcher_Interface
 {
     /**
      * {@inheritdoc}
      */
-    public function dispatchTransition(string $transition, string $service, array $serviceParameters): void
+    public function dispatch_transition(string $transition, string $service, array $service_parameters): void
     {
         // Simply does nothing
     }

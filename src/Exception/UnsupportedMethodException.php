@@ -24,18 +24,16 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Exception;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Exception;
 
 /**
  * Used when trying to use an unsupported HTTP method
  */
-class UnsupportedMethodException extends CircuitBreakerException
+class Unsupported_Method_Exception extends Circuit_Breaker_Exception
 {
-    public static function unsupportedMethod(string $methodName): self
+    public static function unsupported_method(string $method_name): self
     {
-        return new static(sprintf('Unsupported method: "%s"', $methodName));
+        return new static(sprintf('Unsupported method: "%s"', $method_name));
     }
 }

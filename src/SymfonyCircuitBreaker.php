@@ -24,28 +24,21 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
-
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\SystemInterface;
-use PrestaShop\CircuitBreaker\Transition\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\System_Interface;
+use Presta_Shop\Circuit_Breaker\Transition\Event_Dispatcher;
+use Symfony\Component\Event_Dispatcher\Event_Dispatcher_Interface;
 /**
  * Symfony implementation of Circuit Breaker.
  */
-final class SymfonyCircuitBreaker extends AdvancedCircuitBreaker
+final class Symfony_Circuit_Breaker extends Advanced_Circuit_Breaker
 {
-    public function __construct(
-        SystemInterface $system,
-        ClientInterface $client,
-        StorageInterface $storage,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        parent::__construct($system, $client, $storage, new EventDispatcher($eventDispatcher));
+    public function __construct(System_Interface $system, Client_Interface $client, Storage_Interface $storage, Event_Dispatcher_Interface $event_dispatcher)
+    {
+        parent::__construct($system, $client, $storage, new Event_Dispatcher($event_dispatcher));
     }
 }

@@ -24,16 +24,13 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Exception;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Exception;
 
 use Exception;
-
 /**
  * Base exception for Circuit Breaker exceptions
  */
-class CircuitBreakerException extends Exception
+class Circuit_Breaker_Exception extends Exception
 {
 }

@@ -24,50 +24,36 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Client;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Client;
 
 use Exception;
-use GuzzleHttp\Client as OriginalGuzzleClient;
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Exception\UnavailableServiceException;
-use PrestaShop\CircuitBreaker\Exception\UnsupportedMethodException;
-
+use Guzzle_Http\Client as OriginalGuzzleClient;
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Unavailable_Service_Exception;
+use Presta_Shop\Circuit_Breaker\Exception\Unsupported_Method_Exception;
 /**
  * Guzzle implementation of client.
  * The possibility of extending this client is intended.
  */
-class GuzzleClient implements ClientInterface
+class Guzzle_Client implements Client_Interface
 {
     /**
      * @var string by default, calls are sent using GET method
      */
     public const DEFAULT_METHOD = 'GET';
-
     /**
      * Supported HTTP methods
      */
-    public const SUPPORTED_METHODS = [
-        'GET',
-        'HEAD',
-        'POST',
-        'PUT',
-        'DELETE',
-        'OPTIONS',
-    ];
-
+    public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
     /**
      * @var array the Client default options
      */
-    private $defaultOptions;
-
-    public function __construct(array $defaultOptions = [])
+    private $default_options;
+    public function __construct(array $default_options = [])
     {
-        $this->defaultOptions = $defaultOptions;
+        $this->default_options = $default_options;
     }
-
     /**
      * {@inheritdoc}
      *
@@ -76,17 +62,15 @@ class GuzzleClient implements ClientInterface
     public function request(string $resource, array $options): string
     {
         try {
-            $options = array_merge($this->defaultOptions, $options);
-            $client = new OriginalGuzzleClient($options);
-            $method = $this->getHttpMethod($options);
+            $options = array_merge($this->default_options, $options);
+            $client = new Original_Guzzle_Client($options);
+            $method = $this->get_http_method($options);
             $options['exceptions'] = true;
-
-            return (string) $client->request($method, $resource, $options)->getBody();
+            return (string) $client->request($method, $resource, $options)->get_body();
         } catch (Exception $e) {
-            throw new UnavailableServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new Unavailable_Service_Exception($e->get_message(), (int) $e->get_code(), $e);
         }
     }
-
     /**
      * @param array $options the list of options
      *
@@ -94,16 +78,14 @@ class GuzzleClient implements ClientInterface
      *
      * @throws UnsupportedMethodException
      */
-    private function getHttpMethod(array $options): string
+    private function get_http_method(array $options): string
     {
         if (isset($options['method'])) {
             if (!in_array($options['method'], self::SUPPORTED_METHODS)) {
-                throw UnsupportedMethodException::unsupportedMethod($options['method']);
+                throw Unsupported_Method_Exception::unsupported_method($options['method']);
             }
-
             return $options['method'];
         }
-
         return self::DEFAULT_METHOD;
     }
 }

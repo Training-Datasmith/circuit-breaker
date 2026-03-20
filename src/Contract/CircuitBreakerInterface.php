@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,21 +25,19 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * A circuit breaker is used to provide
  * an alternative response when a tiers service
  * is unreachable.
  */
-interface CircuitBreakerInterface
+interface Circuit_Breaker_Interface
 {
     /**
      * @return string the circuit breaker state
      */
-    public function getState(): string;
-
+    public function get_state(): string;
     /**
      * The function that execute the service.
      *
@@ -48,19 +46,16 @@ interface CircuitBreakerInterface
      * @param callable|null $fallback if the service is unavailable, rely on the fallback
      */
     public function call(string $service, array $parameters = [], ?callable $fallback = null): string;
-
     /**
      * @return bool checks if the circuit breaker is open
      */
-    public function isOpened(): bool;
-
+    public function is_opened(): bool;
     /**
      * @return bool checks if the circuit breaker is half open
      */
-    public function isHalfOpened(): bool;
-
+    public function is_half_opened(): bool;
     /**
      * @return bool checks if the circuit breaker is closed
      */
-    public function isClosed(): bool;
+    public function is_closed(): bool;
 }

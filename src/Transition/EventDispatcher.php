@@ -24,37 +24,31 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Transition;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Transition;
-
-use PrestaShop\CircuitBreaker\Contract\TransitionDispatcherInterface;
-use PrestaShop\CircuitBreaker\Event\TransitionEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
+use Presta_Shop\Circuit_Breaker\Contract\Transition_Dispatcher_Interface;
+use Presta_Shop\Circuit_Breaker\Event\Transition_Event;
+use Symfony\Component\Event_Dispatcher\Event_Dispatcher_Interface;
 /**
  * Class EventDispatcher implements the TransitionDispatcher using the Symfony EventDispatcherInterface
  */
-class EventDispatcher implements TransitionDispatcherInterface
+class Event_Dispatcher implements Transition_Dispatcher_Interface
 {
     /**
      * @var EventDispatcherInterface the Symfony Event Dispatcher
      */
-    private $eventDispatcher;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    private $event_dispatcher;
+    public function __construct(Event_Dispatcher_Interface $event_dispatcher)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->event_dispatcher = $event_dispatcher;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function dispatchTransition(string $transition, string $service, array $serviceParameters): void
+    public function dispatch_transition(string $transition, string $service, array $service_parameters): void
     {
-        $event = new TransitionEvent($transition, $service, $serviceParameters);
-
-        $this->eventDispatcher->dispatch($transition, $event);
+        $event = new Transition_Event($transition, $service, $service_parameters);
+        $this->event_dispatcher->dispatch($transition, $event);
     }
 }

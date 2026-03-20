@@ -24,42 +24,35 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Transaction;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Transaction;
 
 use DateTime;
-use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Exception\InvalidTransactionException;
-use PrestaShop\CircuitBreaker\Util\Assert;
-
+use Presta_Shop\Circuit_Breaker\Contract\Place_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Invalid_Transaction_Exception;
+use Presta_Shop\Circuit_Breaker\Util\Assert;
 /**
  * Main implementation of Circuit Breaker transaction.
  */
-final class SimpleTransaction implements TransactionInterface
+final class Simple_Transaction implements Transaction_Interface
 {
     /**
      * @var string the URI of the service
      */
     private $service;
-
     /**
      * @var int the failures when we call the service
      */
     private $failures;
-
     /**
      * @var string the Circuit Breaker state
      */
     private $state;
-
     /**
      * @var DateTime the Transaction threshold datetime
      */
-    private $thresholdDateTime;
-
+    private $threshold_date_time;
     /**
      * @param string $service the service URI
      * @param int $failures the allowed failures
@@ -69,86 +62,69 @@ final class SimpleTransaction implements TransactionInterface
     public function __construct(string $service, int $failures, string $state, int $threshold)
     {
         $this->validate($service, $failures, $state, $threshold);
-
         $this->service = $service;
         $this->failures = $failures;
         $this->state = $state;
-        $this->initThresholdDateTime($threshold);
+        $this->init_threshold_date_time($threshold);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getService(): string
+    public function get_service(): string
     {
         return $this->service;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getFailures(): int
+    public function get_failures(): int
     {
         return $this->failures;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getState(): string
+    public function get_state(): string
     {
         return $this->state;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getThresholdDateTime(): DateTime
+    public function get_threshold_date_time(): DateTime
     {
-        return $this->thresholdDateTime;
+        return $this->threshold_date_time;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function incrementFailures(): bool
+    public function increment_failures(): bool
     {
         ++$this->failures;
-
         return true;
     }
-
     /**
      * Helper to create a transaction from the Place.
      *
      * @param PlaceInterface $place the Circuit Breaker place
      * @param string $service the service URI
      */
-    public static function createFromPlace(PlaceInterface $place, string $service): self
+    public static function create_from_place(Place_Interface $place, string $service): self
     {
-        $threshold = $place->getThreshold();
-
-        return new self(
-            $service,
-            0,
-            $place->getState(),
-            $threshold
-        );
+        $threshold = $place->get_threshold();
+        return new self($service, 0, $place->get_state(), $threshold);
     }
-
     /**
      * Set the right DateTime from the threshold value.
      *
      * @param int $threshold the Transaction threshold
      */
-    private function initThresholdDateTime(int $threshold): void
+    private function init_threshold_date_time(int $threshold): void
     {
-        $thresholdDateTime = new DateTime();
-        $thresholdDateTime->modify("+$threshold second");
-
-        $this->thresholdDateTime = $thresholdDateTime;
+        $threshold_date_time = new DateTime();
+        $threshold_date_time->modify("+{$threshold} second");
+        $this->threshold_date_time = $threshold_date_time;
     }
-
     /**
      * Ensure the transaction is valid (PHP5 is permissive).
      *
@@ -163,16 +139,10 @@ final class SimpleTransaction implements TransactionInterface
      */
     private function validate(string $service, int $failures, string $state, int $threshold): bool
     {
-        $assertionsAreValid = Assert::isURI($service)
-            && Assert::isPositiveInteger($failures)
-            && Assert::isString($state)
-            && Assert::isPositiveInteger($threshold)
-        ;
-
-        if ($assertionsAreValid) {
+        $assertions_are_valid = Assert::is_uri($service) && Assert::is_positive_integer($failures) && Assert::is_string($state) && Assert::is_positive_integer($threshold);
+        if ($assertions_are_valid) {
             return true;
         }
-
-        throw InvalidTransactionException::invalidParameters($service, $failures, $state, $threshold);
+        throw Invalid_Transaction_Exception::invalid_parameters($service, $failures, $state, $threshold);
     }
 }

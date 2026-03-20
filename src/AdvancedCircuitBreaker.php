@@ -24,136 +24,96 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker;
 
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker;
-
-use PrestaShop\CircuitBreaker\Contract\ClientInterface;
-use PrestaShop\CircuitBreaker\Contract\StorageInterface;
-use PrestaShop\CircuitBreaker\Contract\SystemInterface;
-use PrestaShop\CircuitBreaker\Contract\TransactionInterface;
-use PrestaShop\CircuitBreaker\Contract\TransitionDispatcherInterface;
-use PrestaShop\CircuitBreaker\Exception\UnavailableServiceException;
-
+use Presta_Shop\Circuit_Breaker\Contract\Client_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Storage_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\System_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transaction_Interface;
+use Presta_Shop\Circuit_Breaker\Contract\Transition_Dispatcher_Interface;
+use Presta_Shop\Circuit_Breaker\Exception\Unavailable_Service_Exception;
 /**
  * This implementation of the CircuitBreaker is a bit more advanced than the SimpleCircuitBreaker,
  * it allows you to setup your client, system, storage and dispatcher.
  */
-class AdvancedCircuitBreaker extends PartialCircuitBreaker
+class Advanced_Circuit_Breaker extends Partial_Circuit_Breaker
 {
     /** @var TransitionDispatcherInterface */
     protected $dispatcher;
-
     /** @var callable|null */
-    protected $defaultFallback;
-
-    public function __construct(
-        SystemInterface $system,
-        ClientInterface $client,
-        StorageInterface $storage,
-        TransitionDispatcherInterface $dispatcher
-    ) {
+    protected $default_fallback;
+    public function __construct(System_Interface $system, Client_Interface $client, Storage_Interface $storage, Transition_Dispatcher_Interface $dispatcher)
+    {
         parent::__construct($system, $client, $storage);
         $this->dispatcher = $dispatcher;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function call(
-        $service,
-        array $serviceParameters = [],
-        ?callable $fallback = null
-    ): string {
-        $transaction = $this->initTransaction($service);
-
+    public function call($service, array $service_parameters = [], ?callable $fallback = null): string
+    {
+        $transaction = $this->init_transaction($service);
         try {
-            if ($this->isOpened()) {
-                if (!$this->canAccessService($transaction)) {
-                    return $this->callFallback($fallback);
+            if ($this->is_opened()) {
+                if (!$this->can_access_service($transaction)) {
+                    return $this->call_fallback($fallback);
                 }
-
-                $this->moveStateTo(State::HALF_OPEN_STATE, $service);
-                $this->dispatchTransition(
-                    Transition::CHECKING_AVAILABILITY_TRANSITION,
-                    $service,
-                    $serviceParameters
-                );
+                $this->move_state_to(State::HALF_OPEN_STATE, $service);
+                $this->dispatch_transition(Transition::CHECKING_AVAILABILITY_TRANSITION, $service, $service_parameters);
             }
-
-            $response = $this->request($service, $serviceParameters);
-            $this->moveStateTo(State::CLOSED_STATE, $service);
-            $this->dispatchTransition(
-                Transition::CLOSING_TRANSITION,
-                $service,
-                $serviceParameters
-            );
-
+            $response = $this->request($service, $service_parameters);
+            $this->move_state_to(State::CLOSED_STATE, $service);
+            $this->dispatch_transition(Transition::CLOSING_TRANSITION, $service, $service_parameters);
             return $response;
-        } catch (UnavailableServiceException $exception) {
-            $transaction->incrementFailures();
-            $this->storage->saveTransaction($service, $transaction);
-            if (!$this->isAllowedToRetry($transaction)) {
-                $this->moveStateTo(State::OPEN_STATE, $service);
-                $transition = $this->isHalfOpened() ? Transition::REOPENING_TRANSITION : Transition::OPENING_TRANSITION;
-                $this->dispatchTransition($transition, $service, $serviceParameters);
-
-                return $this->callFallback($fallback);
+        } catch (Unavailable_Service_Exception $exception) {
+            $transaction->increment_failures();
+            $this->storage->save_transaction($service, $transaction);
+            if (!$this->is_allowed_to_retry($transaction)) {
+                $this->move_state_to(State::OPEN_STATE, $service);
+                $transition = $this->is_half_opened() ? Transition::REOPENING_TRANSITION : Transition::OPENING_TRANSITION;
+                $this->dispatch_transition($transition, $service, $service_parameters);
+                return $this->call_fallback($fallback);
             }
-
-            return $this->call(
-                $service,
-                $serviceParameters,
-                $fallback
-            );
+            return $this->call($service, $service_parameters, $fallback);
         }
     }
-
-    public function getDefaultFallback(): ?callable
+    public function get_default_fallback(): ?callable
     {
-        return $this->defaultFallback;
+        return $this->default_fallback;
     }
-
-    public function setDefaultFallback(?callable $defaultFallback = null): self
+    public function set_default_fallback(?callable $default_fallback = null): self
     {
-        $this->defaultFallback = $defaultFallback;
-
+        $this->default_fallback = $default_fallback;
         return $this;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function callFallback(?callable $fallback = null): string
+    protected function call_fallback(?callable $fallback = null): string
     {
-        return parent::callFallback($fallback ?? $this->defaultFallback);
+        return parent::call_fallback($fallback ?? $this->default_fallback);
     }
-
-    protected function dispatchTransition(string $transition, string $service, array $serviceParameters): void
+    protected function dispatch_transition(string $transition, string $service, array $service_parameters): void
     {
-        $this->dispatcher->dispatchTransition($transition, $service, $serviceParameters);
+        $this->dispatcher->dispatch_transition($transition, $service, $service_parameters);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function initTransaction(string $service): TransactionInterface
+    protected function init_transaction(string $service): Transaction_Interface
     {
-        if (!$this->storage->hasTransaction($service)) {
-            $this->dispatchTransition(Transition::INITIATING_TRANSITION, $service, []);
+        if (!$this->storage->has_transaction($service)) {
+            $this->dispatch_transition(Transition::INITIATING_TRANSITION, $service, []);
         }
-
-        return parent::initTransaction($service);
+        return parent::init_transaction($service);
     }
-
     /**
      * {@inheritdoc}
      */
     protected function request(string $service, array $parameters = []): string
     {
-        $this->dispatchTransition(Transition::TRIAL_TRANSITION, $service, $parameters);
-
+        $this->dispatch_transition(Transition::TRIAL_TRANSITION, $service, $parameters);
         return parent::request($service, $parameters);
     }
 }

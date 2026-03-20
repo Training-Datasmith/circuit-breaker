@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,33 +25,29 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * A circuit breaker can be in 3 places:
  * closed, half open or open. Each place have its
  * own properties and behaviors.
  */
-interface PlaceInterface
+interface Place_Interface
 {
     /**
      * Return the current state of the Circuit Breaker.
      */
-    public function getState(): string;
-
+    public function get_state(): string;
     /**
      * @return int the number of failures
      */
-    public function getFailures(): int;
-
+    public function get_failures(): int;
     /**
      * @return int the allowed number of trials
      */
-    public function getThreshold(): int;
-
+    public function get_threshold(): int;
     /**
      * @return float the allowed timeout
      */
-    public function getTimeout(): float;
+    public function get_timeout(): float;
 }

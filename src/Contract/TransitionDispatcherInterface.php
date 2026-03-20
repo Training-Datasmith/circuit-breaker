@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,18 +25,17 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * This interface is used for a circuit breaker to dispatch its state transitions.
  */
-interface TransitionDispatcherInterface
+interface Transition_Dispatcher_Interface
 {
     /**
      * @param string $transition the transition name
      * @param string $service the Service URI
      * @param array $serviceParameters the Service parameters
      */
-    public function dispatchTransition(string $transition, string $service, array $serviceParameters): void;
+    public function dispatch_transition(string $transition, string $service, array $service_parameters): void;
 }

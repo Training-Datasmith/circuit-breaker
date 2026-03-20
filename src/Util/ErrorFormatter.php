@@ -24,17 +24,15 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-declare(strict_types=1);
-
-namespace PrestaShop\CircuitBreaker\Util;
+declare (strict_types=1);
+namespace Presta_Shop\Circuit_Breaker\Util;
 
 /**
  * Helper to provide complete and easy to read
  * error messages.
  * Mostly used to build Exception messages.
  */
-final class ErrorFormatter
+final class Error_Formatter
 {
     /**
      * Format error message.
@@ -44,28 +42,19 @@ final class ErrorFormatter
      * @param string $function the validation function
      * @param string $expectedType the expected type
      */
-    public static function format(string $parameter, $value, string $function, string $expectedType): string
+    public static function format(string $parameter, $value, string $function, string $expected_type): string
     {
-        $errorMessage = '';
-        $isValid = Assert::$function($value);
+        $error_message = '';
+        $is_valid = Assert::$function($value);
         $type = gettype($value);
-        $hasStringValue = in_array($type, ['integer', 'float', 'string'], true);
-
-        if (!$isValid) {
-            $errorMessage = sprintf(
-                'Excepted %s to be %s, got %s',
-                $parameter,
-                $expectedType,
-                $type
-            );
-
-            if ($hasStringValue) {
-                $errorMessage .= sprintf(' (%s)', (string) $value);
+        $has_string_value = in_array($type, ['integer', 'float', 'string'], true);
+        if (!$is_valid) {
+            $error_message = sprintf('Excepted %s to be %s, got %s', $parameter, $expected_type, $type);
+            if ($has_string_value) {
+                $error_message .= sprintf(' (%s)', (string) $value);
             }
-
-            $errorMessage .= PHP_EOL;
+            $error_message .= PHP_EOL;
         }
-
-        return $errorMessage;
+        return $error_message;
     }
 }

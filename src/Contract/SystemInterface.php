@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -25,22 +25,20 @@ declare(strict_types=1);
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-namespace PrestaShop\CircuitBreaker\Contract;
+namespace Presta_Shop\Circuit_Breaker\Contract;
 
 /**
  * The System define the places available
  * for the Circuit Breaker and the initial Place.
  */
-interface SystemInterface
+interface System_Interface
 {
     /**
      * @return PlaceInterface[] the list of places of the system
      */
-    public function getPlaces(): array;
-
+    public function get_places(): array;
     /**
      * @return PlaceInterface the initial place of the system
      */
-    public function getInitialPlace(): PlaceInterface;
+    public function get_initial_place(): Place_Interface;
 }

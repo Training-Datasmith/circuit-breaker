@@ -57,6 +57,13 @@ class Factory_Settings implements Factory_Settings_Interface
     private $client;
     /** @var callable|null */
     private $default_fallback;
+    /**
+     * Creates a new settings container with the core circuit-breaker parameters.
+     *
+     * @param int   $failures  Maximum number of consecutive failures before the circuit opens
+     * @param float $timeout   Maximum seconds to wait for a service response before counting a failure
+     * @param int   $threshold Seconds the circuit stays open before allowing a half-open probe
+     */
     public function __construct(int $failures, float $timeout, int $threshold)
     {
         $this->failures = $this->stripped_failures = $failures;
@@ -85,6 +92,13 @@ class Factory_Settings implements Factory_Settings_Interface
     {
         return $this->failures;
     }
+    /**
+     * Sets the failure threshold for the closed state.
+     *
+     * @param int $failures Maximum consecutive failures before the circuit opens
+     *
+     * @return self Fluent interface
+     */
     public function set_failures(int $failures): self
     {
         $this->failures = $failures;
@@ -97,6 +111,13 @@ class Factory_Settings implements Factory_Settings_Interface
     {
         return $this->timeout;
     }
+    /**
+     * Sets the request timeout for the closed state.
+     *
+     * @param float $timeout Maximum seconds to wait for a response before registering a failure
+     *
+     * @return self Fluent interface
+     */
     public function set_timeout(float $timeout): self
     {
         $this->timeout = $timeout;
@@ -109,6 +130,13 @@ class Factory_Settings implements Factory_Settings_Interface
     {
         return $this->threshold;
     }
+    /**
+     * Sets the open-state duration.
+     *
+     * @param int $threshold Seconds the circuit remains open before the first half-open probe is allowed
+     *
+     * @return self Fluent interface
+     */
     public function set_threshold(int $threshold): self
     {
         $this->threshold = $threshold;
@@ -121,15 +149,36 @@ class Factory_Settings implements Factory_Settings_Interface
     {
         return $this->stripped_timeout;
     }
+    /**
+     * Sets the request timeout for the half-open (probe) state.
+     *
+     * @param float $stripped_timeout Maximum seconds to wait during a half-open probe request
+     *
+     * @return self Fluent interface
+     */
     public function set_stripped_timeout(float $stripped_timeout): self
     {
         $this->stripped_timeout = $stripped_timeout;
         return $this;
     }
+
+    /**
+     * Returns the failure threshold for the half-open (probe) state.
+     *
+     * @return int Maximum failures allowed during half-open before re-opening the circuit
+     */
     public function get_stripped_failures(): int
     {
         return $this->stripped_failures;
     }
+
+    /**
+     * Sets the failure threshold for the half-open (probe) state.
+     *
+     * @param int $stripped_failures Maximum failures during half-open before re-opening the circuit
+     *
+     * @return self Fluent interface
+     */
     public function set_stripped_failures(int $stripped_failures): self
     {
         $this->stripped_failures = $stripped_failures;
